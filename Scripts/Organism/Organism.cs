@@ -8,7 +8,7 @@ public class Organism : MonoBehaviour
     [SerializeField] private int _health; 
     [SerializeField] private char _sex; 
     [SerializeField] private double _aggression; 
-    [SerializeField] private int _hunger = 100; 
+    [SerializeField] private int _hunger = 0; 
     [SerializeField] private int _age = 0; 
     [SerializeField] private Color _colour;
     [SerializeField] private string _diet;
@@ -18,7 +18,7 @@ public class Organism : MonoBehaviour
 
     private float wanderCD = 0f;
 
-    private List<Vector3> PelletCoords = new List<Vector3>();
+    public List<Vector3> PelletCoords = new List<Vector3>();
     private Rigidbody2D rb;
 
     private List<Vector3> directions = new List<Vector3> { { Vector3.down }, {Vector3.up},
@@ -84,6 +84,8 @@ public class Organism : MonoBehaviour
         private set { _decreaseInterval = value; }
     }
 
+    public bool hasFoodNearby = false;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -95,13 +97,13 @@ public class Organism : MonoBehaviour
 
     private void getHungry()
     {
-        if (hunger < 0)
+        if (hunger > 100)
             health--;
-        else hunger--;
+        else hunger++;
     }
 
     
-    private void Wander()
+    public void Wander()
     {
         if (wanderCD <= 0f)
         {
@@ -131,7 +133,7 @@ public class Organism : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (hunger <= 50)
+        if (hunger >= 50)
             findFood();
         else 
             Wander();
@@ -171,7 +173,7 @@ public class Organism : MonoBehaviour
     private void eatPellets(GameObject pellet)
     {
         float pelletSize = pellet.GetComponent<CircleCollider2D>().bounds.size.x + pellet.GetComponent<CircleCollider2D>().bounds.size.y;
-        hunger +=(int) pelletSize;
+        hunger -=(int) pelletSize;
         GameObject.DestroyImmediate(pellet);
     }
 
